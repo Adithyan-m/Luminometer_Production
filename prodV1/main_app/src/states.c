@@ -38,6 +38,11 @@ void stateInit(void) {
     StateMachine.bEventOccurred = true;
     StateMachine.eEvent = EVENT_INIT_COMPLETE;
 
+    HAL_StatusTypeDef status = initLevelSensors(&hi2c1);
+    if (status != HAL_OK) {
+        Error_Handler();
+    }
+
     // Exit the state function (the event will be handled in the state transition function)
     return;
 }
@@ -60,9 +65,9 @@ void stateStartUp(void) {
 	new_dark_count = PULSES_darkcount(&htim2);
 
 	if (new_dark_count > DARK_THRESH){
-		// do some error handling
 	    StateMachine.bEventOccurred = true;
 	    StateMachine.eEvent = EVENT_STARTUP_FAILED_DARK;
+        return;
 	}
 
 	// Saving new dark count
@@ -71,9 +76,15 @@ void stateStartUp(void) {
 	    // Handle error
 	    StateMachine.bEventOccurred = true;
 	    StateMachine.eEvent = EVENT_STARTUP_FAILED_FLASH;
+        return;
 	}
 
 	// Starter Level
+    if(calculate_level(&hi2c1) < 5 ){
+        StateMachine.bEventOccurred = true;
+        StateMachine.eState = EVENT_STARTUP_FAILED_STARTER;
+        return;
+    }
 
 
     uint8_t buffer[10];  // Buffer to hold all bytes to be sent

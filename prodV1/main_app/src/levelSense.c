@@ -7,6 +7,8 @@
  *
  */
 #include "levelSense.h"
+
+
 // Single ended configuration
 HAL_StatusTypeDef initLevelSense_SingleEnded(I2C_HandleTypeDef *hi2c, uint8_t measChnl, uint8_t measConfig, bool capdac, uint8_t capdacVal ){
 
@@ -100,6 +102,77 @@ HAL_StatusTypeDef readValue_singleEnded(I2C_HandleTypeDef *hi2c, uint8_t measCon
     *measVal = ((uint32_t)msb_data[0] << 16) | ((uint32_t)msb_data[1] << 8) | lsb_data[0];
 
     return HAL_OK;
+
+}
+
+HAL_StatusTypeDef initLevelSensors(I2C_HandleTypeDef *hi2c) {
+    HAL_StatusTypeDef status;
+
+    // Setup measurement 1 for channel 1
+    status = initLevelSense_SingleEnded(hi2c, 1, 1, false, 0);
+    if (status != HAL_OK) return status;
+
+    // Setup measurement 2 for channel 2
+    status = initLevelSense_SingleEnded(hi2c, 2, 2, false, 0);
+    if (status != HAL_OK) return status;
+
+    // Setup measurement 3 for channel 3
+    status = initLevelSense_SingleEnded(hi2c, 3, 3, false, 0);
+    if (status != HAL_OK) return status;
+
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef readLevelSensors(I2C_HandleTypeDef *hi2c, float *channel1, float *channel2, float *channel3) {
+    HAL_StatusTypeDef status;
+
+    // Trigger measurements
+    uint8_t fdc_conf[3] = {FDC_CONF, 0x04, 0x07}; // 100S/s, MEAS_1, MEAS_2, and MEAS_3 enabled
+    status = HAL_I2C_Master_Transmit(hi2c, (FDC1004_ADDR<<1), fdc_conf, 3, HAL_MAX_DELAY);
+    if (status != HAL_OK) return status;
+
+    // Wait for measurements to complete
+    uint8_t status_reg[2];
+    do {
+        uint8_t reg = FDC_CONF;
+        status = HAL_I2C_Master_Transmit(hi2c, (FDC1004_ADDR<<1), &reg, 1, HAL_MAX_DELAY);
+        if (status != HAL_OK) return status;
+        
+        status = HAL_I2C_Master_Receive(hi2c, (FDC1004_ADDR<<1), status_reg, 2, HAL_MAX_DELAY);
+        if (status != HAL_OK) return status;
+    } while ((status_reg[1] & 0x07) != 0x07); // Wait for DONE_1, DONE_2, and DONE_3
+
+    // Read values
+    uint16_t raw_value;
+    
+    status = readValue_singleEnded(hi2c, 1, &raw_value);
+    if (status != HAL_OK) return status;
+    *channel1 = ((float)raw_value / 524288.0f) - 16.0f;
+
+    status = readValue_singleEnded(hi2c, 2, &raw_value);
+    if (status != HAL_OK) return status;
+    *channel2 = ((float)raw_value / 524288.0f) - 16.0f;
+
+    status = readValue_singleEnded(hi2c, 3, &raw_value);
+    if (status != HAL_OK) return status;
+    *channel3 = ((float)raw_value / 524288.0f) - 16.0f;
+
+    return HAL_OK;
+}
+
+uint8_t calculate_level(I2C_HandleTypeDef *hi2c){
+    
+    float channel1, channel2, channel3;
+    uint8_t level = 0;
+    // Get the three readings
+    readLevelSensors(hi2c,&channel1,&channel2,&channel3);
+
+    // CH1 - LEV, CH2 - RE, CH3 - RL
+    // (lev - lev0)/(rl - re)
+    
+    level = (channel1 - CLEV0)/(channel3 - channel2);
+
+    return level;
 
 }
 
