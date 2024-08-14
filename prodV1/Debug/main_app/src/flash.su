@@ -1,0 +1,13 @@
+../main_app/src/flash.c:20:13:GetAddressRange	24	static
+../main_app/src/flash.c:51:26:EraseFlashSector	40	static
+../main_app/src/flash.c:64:19:WriteToFlashAddress	48	static
+../main_app/src/flash.c:82:6:ReadFromFlashAddress	24	static
+../main_app/src/flash.c:87:10:GetSectorForAddress	16	static
+../main_app/src/flash.c:94:19:WriteDataToFlash	48	static
+../main_app/src/flash.c:123:19:ReadLatestDarkCount	40	static
+../main_app/src/flash.c:151:26:FindNextWriteAddress	40	static
+../main_app/src/flash.c:178:19:AppendData	40	static
+../main_app/src/flash.c:211:19:ReadData	48	static
+../main_app/src/flash.c:238:19:DeleteData	48	static
+../main_app/src/flash.c:265:19:WriteDarkCount	56	static
+../main_app/src/flash.c:304:19:PerformGarbageCollection	1072	static

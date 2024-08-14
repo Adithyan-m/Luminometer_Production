@@ -1,0 +1,2 @@
+../main_app/src/pulses.c:11:10:PULSES_darkcount	24	static
+../main_app/src/pulses.c:30:6:HAL_TIM_IC_CaptureCallback	16	static

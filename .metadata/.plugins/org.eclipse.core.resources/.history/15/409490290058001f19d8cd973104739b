@@ -1,0 +1,33 @@
+/*
+ * pulses.c
+ *
+ *  Created on: Aug 11, 2024
+ *      Author: adith
+ */
+
+volatile uint32_t pulse_count = 0;
+
+void measure_pulses(void) {
+  // Reset pulse count
+  pulse_count = 0;
+
+  // Start timer
+  HAL_TIM_Start(&TIMER_INSTANCE, TIMER_CHANNEL);
+
+  // Wait for 3 seconds
+  HAL_Delay(3000);
+
+  // Stop timer
+  HAL_TIM_Stop(&TIMER_INSTANCE, TIMER_CHANNEL);
+
+  // Calculate average pulses per second
+  uint32_t average_pulses = pulse_count / 3;
+
+  // Print or store the result
+  // ...
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+  // Increment pulse count on each rising edge
+  pulse_count++;
+}

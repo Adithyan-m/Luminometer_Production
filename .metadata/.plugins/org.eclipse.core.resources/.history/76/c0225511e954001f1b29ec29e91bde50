@@ -1,0 +1,69 @@
+/*
+ * states.c
+ *
+ *  Created on: Aug 7, 2024
+ *      Author: adith
+ */
+
+#include "states.h"
+
+
+void StateTransition(void)
+{
+    if (StateMachine.bEventOccurred)
+    {
+        StateMachine.bEventOccurred = false;
+        for (uint32_t idx = 0U; idx < STATE_TABLE_SIZE; idx++)
+        {
+            if ((StateTransition[idx].eCurrState == StateMachine.eState) &&
+                (StateTransition[idx].eEvent == StateMachine.eEvent))
+            {
+                StateMachine.eState = StateTransition[idx].eNextState;
+                break;
+            }
+        }
+    }
+    StateArray[StateMachine.eState]();
+}
+
+void stateInit(void) {
+
+	MX_GPIO_Init();
+	MX_ADC1_Init();
+	MX_DAC_Init();
+	MX_I2C1_Init();
+	MX_I2C3_Init();
+	MX_UART4_Init();
+	MX_USB_OTG_HS_PCD_Init();
+	MX_TIM2_Init();
+	MX_SPI3_Init();
+	MX_USART1_UART_Init();
+	MX_USART2_UART_Init();
+	MX_FATFS_Init();
+	MX_USB_HOST_Init();
+	MX_TIM1_Init();
+	MX_TIM4_Init();
+	MX_TIM9_Init();
+
+	HAL_Delay(100);
+	StateMachine.bEventOccurred = true;
+	StateMachine.eEvent = EVENT_INIT_COMPLETE;
+
+	// Exit the state function (the event will be handled in the state transition function)
+	return;
+
+    }
+}
+
+void stateStartUp(void){
+
+}
+
+void stateHomeMenu(void){
+
+}
+
+void stateError(void){
+
+}
+

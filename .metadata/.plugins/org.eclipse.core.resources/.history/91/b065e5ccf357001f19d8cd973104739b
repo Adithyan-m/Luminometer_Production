@@ -1,0 +1,86 @@
+/*
+ * states.c
+ *
+ * Created on: Aug 7, 2024
+ * Author: adith
+ */
+
+#include "states.h"
+
+// Include necessary headers for MX_* functions
+// For example:
+// #include "fatfs.h"
+// #include "usb_host.h"
+
+void StateTransition(void)
+{
+    if (StateMachine.bEventOccurred)
+    {
+        StateMachine.bEventOccurred = false;
+        for (uint32_t idx = 0U; idx < STATE_TABLE_SIZE; idx++)
+        {
+            if ((StateTransitionTable[idx].eCurrState == StateMachine.eState) &&
+                (StateTransitionTable[idx].eEvent == StateMachine.eEvent))
+            {
+                StateMachine.eState = StateTransitionTable[idx].eNextState;
+                break;
+            }
+        }
+    }
+    StateArray[StateMachine.eState]();
+}
+
+void stateInit(void) {
+    // Init Functions
+    MX_GPIO_Init();
+    MX_ADC1_Init();
+    MX_DAC_Init();
+    MX_I2C1_Init();
+    MX_I2C3_Init();
+    MX_UART4_Init();
+    MX_USB_OTG_HS_PCD_Init();
+    MX_TIM2_Init();
+    MX_SPI3_Init();
+    MX_USART1_UART_Init();
+    MX_USART2_UART_Init();
+    MX_FATFS_Init();
+    MX_USB_HOST_Init();
+    MX_TIM1_Init();
+    MX_TIM4_Init();
+    MX_TIM9_Init();
+
+    HAL_Delay(2000);
+
+    // Send command to change screen to system check screen
+    StateMachine.bEventOccurred = true;
+    StateMachine.eEvent = EVENT_INIT_COMPLETE;
+
+    // Exit the state function (the event will be handled in the state transition function)
+    return;
+}
+
+void stateStartUp(void) {
+
+    // Implement startup logic here
+	// Some kind of handshake, for now assume it works
+
+	//uint32_t data
+	//ReadData(DATA_TYPE_ERROR_CODES, 1, &data, sizeof(data));
+
+	if(HAL_GPIO_ReadPin(LIMIT_SW_1_GPIO_Port, LIMIT_SW_1_Pin) == GPIO_PIN_SET){
+		cuvetteRotate(&htim9, hdac)
+	}
+
+
+
+
+	//
+}
+
+void stateHomeMenu(void) {
+    // Implement home menu logic here
+}
+
+void stateError(void) {
+    // Implement error handling logic here
+}

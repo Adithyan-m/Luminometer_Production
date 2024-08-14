@@ -1,0 +1,27 @@
+/*
+ * states.c
+ *
+ *  Created on: Aug 7, 2024
+ *      Author: adith
+ */
+
+#include "states.h"
+
+
+void StateTransition(void)
+{
+    if (StateMachine.bEventOccurred)
+    {
+        StateMachine.bEventOccurred = false;
+        for (uint32_t idx = 0U; idx < STATE_TABLE_SIZE; idx++)
+        {
+            if ((StateTransition[idx].eCurrState == StateMachine.eState) &&
+                (StateTransition[idx].eEvent == StateMachine.eEvent))
+            {
+                StateMachine.eState = StateTransition[idx].eNextState;
+                break;
+            }
+        }
+    }
+    StateArray[StateMachine.eState]();
+}

@@ -1,0 +1,222 @@
+/*
+ * flash.c
+ *
+ *  Created on: Aug 10, 2024
+ *      Author: adith
+ */
+
+#include "flash.h"
+
+#include "stm32f4xx_hal.h"
+#include <string.h>
+
+// Define the data types
+typedef enum {
+    DATA_TYPE_ERROR_CODES,
+    DATA_TYPE_GENERAL_DATA,
+    DATA_TYPE_PRODUCT_INFO,
+    DATA_TYPE_MAX
+} DataType;
+
+// Define the memory layout
+#define FLASH_USER_START_ADDR     0x08060000
+#define FLASH_USER_END_ADDR       0x0807FFFF
+
+#define ERROR_CODES_START_ADDR    FLASH_USER_START_ADDR
+#define ERROR_CODES_SIZE          0x4000  // 16 KB for error codes
+
+#define GENERAL_DATA_START_ADDR   (ERROR_CODES_START_ADDR + ERROR_CODES_SIZE)
+#define GENERAL_DATA_SIZE         0x18000 // 96 KB for general data
+
+#define PRODUCT_INFO_START_ADDR   (GENERAL_DATA_START_ADDR + GENERAL_DATA_SIZE)
+#define PRODUCT_INFO_SIZE         0x4000  // 16 KB for product info
+
+#define RECORD_HEADER_SIZE        8       // 4 bytes for size, 4 bytes for status
+#define RECORD_MAX_SIZE           1024    // Maximum size of a single record
+
+typedef struct {
+    uint32_t size;
+    uint32_t status; // 0xFFFFFFFF = empty, 0x00000000 = valid, 0x00000001 = deleted
+} RecordHeader;
+
+// Last written addresses for each data type
+static uint32_t last_write_address[DATA_TYPE_MAX] = {
+    ERROR_CODES_START_ADDR,
+    GENERAL_DATA_START_ADDR,
+    PRODUCT_INFO_START_ADDR
+};
+
+// Helper function to get the start and end addresses for a given data type
+static void GetAddressRange(DataType type, uint32_t* start, uint32_t* end) {
+    switch (type) {
+        case DATA_TYPE_ERROR_CODES:
+            *start = ERROR_CODES_START_ADDR;
+            *end = ERROR_CODES_START_ADDR + ERROR_CODES_SIZE;
+            break;
+        case DATA_TYPE_GENERAL_DATA:
+            *start = GENERAL_DATA_START_ADDR;
+            *end = GENERAL_DATA_START_ADDR + GENERAL_DATA_SIZE;
+            break;
+        case DATA_TYPE_PRODUCT_INFO:
+            *start = PRODUCT_INFO_START_ADDR;
+            *end = PRODUCT_INFO_START_ADDR + PRODUCT_INFO_SIZE;
+            break;
+        default:
+            *start = 0;
+            *end = 0;
+    }
+}
+
+// Function to find the next available write address for a given data type
+static HAL_StatusTypeDef FindNextWriteAddress(DataType type) {
+    uint32_t start, end;
+    GetAddressRange(type, &start, &end);
+
+    uint32_t address = start;
+    RecordHeader header;
+
+    while (address < end) {
+        ReadFromFlashAddress(address, (uint8_t*)&header, sizeof(RecordHeader));
+
+        if (header.status == 0xFFFFFFFF) {
+            // Found an empty spot
+            last_write_address[type] = address;
+            return HAL_OK;
+        }
+
+        // Move to the next record
+        address += RECORD_HEADER_SIZE + header.size;
+
+        // Align to 4-byte boundary
+        address = (address + 3) & ~3;
+    }
+
+    // If we're here, we've run out of space
+    return HAL_ERROR;
+}
+
+HAL_StatusTypeDef AppendData(DataType type, const uint8_t* data, uint32_t size) {
+    if (size > RECORD_MAX_SIZE) {
+        return HAL_ERROR;
+    }
+
+    if (FindNextWriteAddress(type) != HAL_OK) {
+        // No space left, need to perform garbage collection
+        if (PerformGarbageCollection(type) != HAL_OK) {
+            return HAL_ERROR;
+        }
+        if (FindNextWriteAddress(type) != HAL_OK) {
+            return HAL_ERROR;
+        }
+    }
+
+    RecordHeader header = {size, 0x00000000};  // Valid status
+
+    HAL_StatusTypeDef status = WriteDataToFlash(last_write_address[type], (uint8_t*)&header, sizeof(RecordHeader));
+    if (status != HAL_OK) {
+        return status;
+    }
+
+    status = WriteDataToFlash(last_write_address[type] + sizeof(RecordHeader), data, size);
+    if (status != HAL_OK) {
+        return status;
+    }
+
+    last_write_address[type] += RECORD_HEADER_SIZE + size;
+    last_write_address[type] = (last_write_address[type] + 3) & ~3;  // Align to 4-byte boundary
+
+    return HAL_OK;
+}
+
+HAL_StatusTypeDef ReadData(DataType type, uint32_t index, uint8_t* data, uint32_t* size) {
+    uint32_t start, end;
+    GetAddressRange(type, &start, &end);
+
+    uint32_t address = start;
+    RecordHeader header;
+    uint32_t current_index = 0;
+
+    while (address < end) {
+        ReadFromFlashAddress(address, (uint8_t*)&header, sizeof(RecordHeader));
+
+        if (header.status == 0x00000000) {  // Valid record
+            if (current_index == index) {
+                ReadFromFlashAddress(address + sizeof(RecordHeader), data, header.size);
+                *size = header.size;
+                return HAL_OK;
+            }
+            current_index++;
+        }
+
+        address += RECORD_HEADER_SIZE + header.size;
+        address = (address + 3) & ~3;  // Align to 4-byte boundary
+    }
+
+    return HAL_ERROR;  // Record not found
+}
+
+HAL_StatusTypeDef DeleteData(DataType type, uint32_t index) {
+    uint32_t start, end;
+    GetAddressRange(type, &start, &end);
+
+    uint32_t address = start;
+    RecordHeader header;
+    uint32_t current_index = 0;
+
+    while (address < end) {
+        ReadFromFlashAddress(address, (uint8_t*)&header, sizeof(RecordHeader));
+
+        if (header.status == 0x00000000) {  // Valid record
+            if (current_index == index) {
+                // Mark as deleted
+                uint32_t deleted_status = 0x00000001;
+                return WriteDataToFlash(address + 4, (uint8_t*)&deleted_status, 4);
+            }
+            current_index++;
+        }
+
+        address += RECORD_HEADER_SIZE + header.size;
+        address = (address + 3) & ~3;  // Align to 4-byte boundary
+    }
+
+    return HAL_ERROR;  // Record not found
+}
+
+HAL_StatusTypeDef PerformGarbageCollection(DataType type) {
+    uint32_t start, end;
+    GetAddressRange(type, &start, &end);
+
+    uint32_t read_address = start;
+    uint32_t write_address = start;
+    RecordHeader header;
+
+    while (read_address < end) {
+        ReadFromFlashAddress(read_address, (uint8_t*)&header, sizeof(RecordHeader));
+
+        if (header.status == 0x00000000) {  // Valid record
+            if (read_address != write_address) {
+                // Move the record
+                uint8_t buffer[RECORD_MAX_SIZE];
+                ReadFromFlashAddress(read_address + sizeof(RecordHeader), buffer, header.size);
+
+                WriteDataToFlash(write_address, (uint8_t*)&header, sizeof(RecordHeader));
+                WriteDataToFlash(write_address + sizeof(RecordHeader), buffer, header.size);
+            }
+            write_address += RECORD_HEADER_SIZE + header.size;
+            write_address = (write_address + 3) & ~3;  // Align to 4-byte boundary
+        }
+
+        read_address += RECORD_HEADER_SIZE + header.size;
+        read_address = (read_address + 3) & ~3;  // Align to 4-byte boundary
+    }
+
+    // Erase remaining space
+    uint32_t sector = GetSectorForAddress(write_address);
+    while (sector <= GetSectorForAddress(end - 1)) {
+        EraseFlashSector(sector);
+        sector++;
+    }
+
+    last_write_address[type] = write_address;
+    return HAL_OK;
+}

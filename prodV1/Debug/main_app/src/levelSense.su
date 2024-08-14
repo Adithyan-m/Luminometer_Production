@@ -1,0 +1,2 @@
+../main_app/src/levelSense.c:11:19:initLevelSense_SingleEnded	32	static
+../main_app/src/levelSense.c:50:19:readValue_singleEnded	48	static

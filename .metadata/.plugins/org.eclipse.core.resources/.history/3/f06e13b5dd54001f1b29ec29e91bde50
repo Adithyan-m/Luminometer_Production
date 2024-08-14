@@ -1,0 +1,78 @@
+/*
+ * main_app.h
+ *
+ *  Created on: Aug 6, 2024
+ *      Author: adith
+ */
+
+#ifndef MAIN_APP_INCLUDES_MAIN_APP_H_
+#define MAIN_APP_INCLUDES_MAIN_APP_H_
+
+#include "main.h"
+
+// Peripheral Handles
+extern ADC_HandleTypeDef hadc1;
+
+extern DAC_HandleTypeDef hdac;
+
+extern I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c3;
+
+extern SPI_HandleTypeDef hspi3;
+
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim9;
+
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
+
+extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
+
+
+// State machine states
+typedef enum{
+	ST_IDLE,
+	ST_STARTUP,
+	ST_HOMEMENU,
+	ST_ERROR
+}MACHINE_STATE_t;
+
+typedef enum{
+	NO_EVENT = 0,
+	EVENT_STARTUP_COMPLETE,
+	EVENT_STARTUP_FAILED
+}MACHINE_EVENT_t;
+
+typedef struct
+{
+    void (*stStateFcn)(void);
+} STATE_ARRAY_t;
+
+typedef struct
+{
+    MACHINE_STATE_t eCurrState;
+    MACHINE_EVENT_t eEvent;
+    MACHINE_STATE_t eNextState;
+} STATE_TRANSITION_t;
+
+const STATE_ARRAY_t StateArray[] = {
+		{ stateIdle },
+		{ stateStartUp },
+		{ state }
+};
+
+// State Functions
+void stateIdle(void);
+void stateStartUp(void);
+void stateHomeMenu(void);
+void stateError(void);
+
+
+// Main loop
+void main_app(void);
+
+
+#endif /* MAIN_APP_INCLUDES_MAIN_APP_H_ */
