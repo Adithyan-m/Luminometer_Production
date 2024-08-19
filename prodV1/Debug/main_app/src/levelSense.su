@@ -1,2 +1,5 @@
-../main_app/src/levelSense.c:11:19:initLevelSense_SingleEnded	32	static
-../main_app/src/levelSense.c:50:19:readValue_singleEnded	48	static
+../main_app/src/levelSense.c:13:19:initLevelSense_SingleEnded	32	static
+../main_app/src/levelSense.c:52:19:readValue_singleEnded	48	static
+../main_app/src/levelSense.c:108:19:initLevelSensors	32	static
+../main_app/src/levelSense.c:126:19:readLevelSensors	48	static
+../main_app/src/levelSense.c:163:9:calculate_level	32	static

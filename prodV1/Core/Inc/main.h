@@ -42,8 +42,6 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define PAGE_MENU 0001
-
 
 /* USER CODE END EC */
 

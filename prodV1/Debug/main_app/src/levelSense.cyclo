@@ -1,2 +1,5 @@
-../main_app/src/levelSense.c:11:19:initLevelSense_SingleEnded	8
-../main_app/src/levelSense.c:50:19:readValue_singleEnded	8
+../main_app/src/levelSense.c:13:19:initLevelSense_SingleEnded	8
+../main_app/src/levelSense.c:52:19:readValue_singleEnded	8
+../main_app/src/levelSense.c:108:19:initLevelSensors	4
+../main_app/src/levelSense.c:126:19:readLevelSensors	8
+../main_app/src/levelSense.c:163:9:calculate_level	1

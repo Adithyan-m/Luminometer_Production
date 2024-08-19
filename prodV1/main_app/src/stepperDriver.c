@@ -41,7 +41,7 @@ HAL_StatusTypeDef cuvetteRotate(TIM_HandleTypeDef* tim_handle, DAC_HandleTypeDef
     GPIO_PinState lastState = GPIO_PIN_RESET;
     GPIO_PinState currentState;
     uint32_t startTime = HAL_GetTick();
-    uint32_t timeout = 30000; // 30 seconds timeout
+    uint32_t timeout = 300; // 30 seconds timeout
 
     while (1) {
         currentState = HAL_GPIO_ReadPin(LIMIT_SW_1_GPIO_Port, LIMIT_SW_1_Pin);

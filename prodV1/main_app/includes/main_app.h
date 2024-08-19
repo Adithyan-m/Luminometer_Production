@@ -21,6 +21,21 @@
 // Dark Threshold
 #define DARK_THRESH 800
 
+// PAGE NUMBERS
+enum {
+	PAGE_SPASH,
+	PAGE_INIT,
+	PAGE_MENU,
+	PAGE_SERVICE_PASSWORD,
+	PAGE_TEST_REPORTS,
+	PAGE_QC_REPORTS,
+	PAGE_SETTINGS,
+	PAGE_SYSTEMS_CHECK,
+	PAGE_MESURE,
+	PAGE_CONTINUE,
+	PAGE_SEVICES
+};
+
 // Peripheral Handles
 extern ADC_HandleTypeDef hadc1;
 extern DAC_HandleTypeDef hdac;
@@ -35,6 +50,9 @@ extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
+
+
+HAL_StatusTypeDef HMI_changepage(UART_HandleTypeDef *uart, uint16_t pagenum);
 
 
 
