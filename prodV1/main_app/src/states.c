@@ -94,15 +94,76 @@ void stateStartUp(void) {
     StateMachine.bEventOccurred = true;
     StateMachine.eEvent = EVENT_STARTUP_COMPLETE;
 
-    HMI_changepage(&huart2, PAGE_MENU);
     HAL_Delay(2000);
+    HMI_changepage(&huart2, PAGE_MENU);
 
     return;
 
 }
 
 void stateHomeMenu(void) {
-    // Implement home menu logic here
+    
+    HMI_changepage(&huart2, PAGE_MENU);  // Changing page to menu
+    
+    // Initializing Data Buffer
+    uint8_t dataBuffer[10] = {0};
+
+    // Wait till a valid keypress to avoid random messages
+    while(1){
+
+        // Wait till we recieve 10 bytes of data (1 key press)
+        if(HAL_UART_Receive(&huart2, dataBuffer, 10, HAL_MAX_DELAY == HAL_OK)){
+            
+            // Check if it is for a key press
+            if(dataBuffer[8] == 0xFF){
+                
+                // Switch on keypress and assign right state then return
+                switch (dataBuffer[9]){
+                    
+                    case 0x00:
+                        // Measure Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_MEASURE;                       
+                        break;
+                    
+                    case 0x01:
+                        // Test Reports Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_TEST_REPORT;  
+                        break;
+
+                    case 0x02:
+                        // QC Reports Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_QC_REPORT;  
+                        break;
+
+                    case 0x03:
+                        // Settings Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_SETTINGS;  
+                        break;
+                    
+                    case 0x04:
+                        // System Check Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_SYSTEM_CHECK;  
+                        break;
+
+                    case 0x05:
+                        // Services Menu
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_MENU_SERVICES;  
+                        break;
+
+                    default:
+                        break;
+                }
+
+                return;
+            }
+        }
+    }
 }
 
 void stateError(void) {
