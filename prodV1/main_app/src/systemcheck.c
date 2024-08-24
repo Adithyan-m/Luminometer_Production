@@ -31,9 +31,17 @@ void autoCheck(void){
     
     // Prime pump
     // Run three cycles
-    // Run 
-    // 
+    // Spin cuvette
+    // Ask if cuvette has water
+    // if no spin again with a "tried once flag"
+    // spin again and ask
+    // if no again, pump faliure error
 
+
+    // light check 
+    // ask for skip or add reagenet
+    // spin 
+    // display results
 
     
 
