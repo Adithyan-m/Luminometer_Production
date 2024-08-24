@@ -15,6 +15,7 @@
 void stateInit(void);
 void stateStartUp(void);
 void stateHomeMenu(void);
+void stateSystemCheck(void);
 void stateError(void);
 
 // State machine states
@@ -22,6 +23,12 @@ typedef enum {
     ST_INIT,
     ST_STARTUP,
     ST_HOMEMENU,
+    ST_MEASURE,
+    ST_TEST_REPORT,
+    ST_QC_REPORT,
+    ST_SETTINGS,
+    ST_SYSTEM_CHECK,
+    ST_SERVICES,
     ST_ERROR,
     ST_MAX_STATE
 } MACHINE_STATE_t;
@@ -30,11 +37,22 @@ typedef enum {
 typedef enum {
     NO_EVENT = 0,
     EVENT_INIT_COMPLETE,
+    
     EVENT_STARTUP_COMPLETE,
     EVENT_STARTUP_FAILED_DARK,
     EVENT_STARTUP_FAILED_HANDSHAKE,
     EVENT_STARTUP_FAILED_STARTER,
 	EVENT_STARTUP_FAILED_FLASH,
+    
+    EVENT_MENU_MEASURE,
+    EVENT_MENU_TEST_REPORT,
+    EVENT_MENU_QC_REPORT,
+    EVENT_MENU_SETTINGS,
+    EVENT_MENU_SYSTEM_CHECK,
+    EVENT_MENU_SERVICES,
+
+    EVENT_SYSCEHCK_CUV_FAILED,
+    
 	EVENT_ERROR_IGNORE
 } MACHINE_EVENT_t;
 
@@ -46,6 +64,7 @@ static const StateFunctionPtr StateArray[ST_MAX_STATE] = {
     stateInit,
     stateStartUp,
     stateHomeMenu,
+    stateSystemCheck,
     stateError
 };
 
@@ -58,9 +77,10 @@ typedef struct {
 
 // Transition table
 static const STATE_TRANSITION_t StateTransitionTable[] = {
-    /* Current State    Event                 Next State */
-    { ST_INIT,          NO_EVENT,             ST_INIT },
-    { ST_INIT,          EVENT_INIT_COMPLETE,  ST_STARTUP },
+
+    /* Current State    Event                           Next State */
+    { ST_INIT,          NO_EVENT,                       ST_INIT },
+    { ST_INIT,          EVENT_INIT_COMPLETE,            ST_STARTUP },
 
     { ST_STARTUP,       NO_EVENT,             			ST_STARTUP },
     { ST_STARTUP,       EVENT_STARTUP_COMPLETE, 		ST_HOMEMENU },
@@ -69,10 +89,16 @@ static const STATE_TRANSITION_t StateTransitionTable[] = {
     { ST_STARTUP,       EVENT_STARTUP_FAILED_STARTER, 	ST_ERROR },
     { ST_STARTUP,       EVENT_STARTUP_FAILED_FLASH, 	ST_ERROR },
 
-    { ST_HOMEMENU,      NO_EVENT,             ST_HOMEMENU },
+    { ST_HOMEMENU,      NO_EVENT,                       ST_HOMEMENU },
+    { ST_HOMEMENU,      EVENT_MENU_MEASURE,             ST_MEASURE },
+    { ST_HOMEMENU,      EVENT_MENU_TEST_REPORT,         ST_TEST_REPORT },
+    { ST_HOMEMENU,      EVENT_MENU_QC_REPORT,           ST_QC_REPORT },
+    { ST_HOMEMENU,      EVENT_MENU_SETTINGS,            ST_SETTINGS },
+    { ST_HOMEMENU,      EVENT_MENU_SYSTEM_CHECK,        ST_SYSTEM_CHECK },
+    { ST_HOMEMENU,      EVENT_MENU_SERVICES,            ST_SERVICES },
 
-    { ST_ERROR,         NO_EVENT,             ST_ERROR },
-    { ST_ERROR,         EVENT_ERROR_IGNORE,   ST_HOMEMENU }
+    { ST_ERROR,         NO_EVENT,                       ST_ERROR },
+    { ST_ERROR,         EVENT_ERROR_IGNORE,             ST_HOMEMENU }
 };
 
 // Number of transitions in the StateTransitionTable array

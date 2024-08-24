@@ -166,6 +166,58 @@ void stateHomeMenu(void) {
     }
 }
 
+
+void stateSystemCheck(void){
+    
+    // Wait till a valid keypress to avoid random messages
+    while(1){
+
+        // Wait till we recieve 10 bytes of data (1 key press)
+        if(HAL_UART_Receive(&huart2, dataBuffer, 10, HAL_MAX_DELAY == HAL_OK)){
+            
+            // Check if it is for a key press
+            if(dataBuffer[8] == 0xFF){
+                
+                // Switch on keypress and assign right state then return
+                switch (dataBuffer[9]){
+                    
+                    case 0x40:
+                        // Auto Check                      
+                        void autoCheck(void);
+                        break;
+                    
+                    case 0x41:
+                        // Background Check
+                        void backgroundCheck(void);
+                        break;
+
+                    case 0x42:
+                        // Pump Primimg
+                        void pumpPriming(void);
+                        break;
+
+                    case 0x43:
+                        // Dark Check
+                        void darkCheck(void);
+                        break;
+                    
+                    case 0x44:
+                        // Light Check
+                        void lightCheck(void);
+                        break;
+
+                    case 0xFF:
+                        // back button
+
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+}
+
 void stateError(void) {
     // Implement error handling logic here
 }

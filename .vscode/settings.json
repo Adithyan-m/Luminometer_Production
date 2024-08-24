@@ -1,6 +1,18 @@
 {
     "files.associations": {
         "stdint.h": "c",
-        "levelsense.h": "c"
-    }
+        "levelsense.h": "c",
+        "main_app.h": "c",
+        "main.h": "c"
+    },
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "C:\\WD\\Lumino_Prod\\prodV1\\Core\\Inc",
+        "C:\\WD\\Lumino_Prod\\prodV1\\main_app\\includes"
+    ],
+    "C_Cpp.default.browse.path": [
+        "${workspaceFolder}",
+        "C:\\WD\\Lumino_Prod\\prodV1\\Core\\Src",
+        "C:\\WD\\Lumino_Prod\\prodV1\\main_app\\src"
+    ]
 }

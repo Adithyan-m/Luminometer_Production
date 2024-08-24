@@ -16,7 +16,7 @@
 #include "pulses.h"
 #include "stdint.h"
 #include "levelSense.h"
-#include "stdint.h"
+#include <stdint.h>
 
 // Dark Threshold
 #define DARK_THRESH 800
