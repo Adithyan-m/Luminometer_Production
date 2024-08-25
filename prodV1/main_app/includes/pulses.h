@@ -10,6 +10,7 @@
 
 #include "main_app.h"
 
+uint32_t PULSES_background(TIM_HandleTypeDef *htim);
 uint32_t PULSES_darkcount(TIM_HandleTypeDef *htim);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 

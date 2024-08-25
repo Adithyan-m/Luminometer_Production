@@ -24,6 +24,8 @@ void autoCheck(void){
     }
 
     // Background check
+    uint32_t = PULSES_background(&htim2);
+
     // Rotate cuvete
     // do check
     // ask if to store    

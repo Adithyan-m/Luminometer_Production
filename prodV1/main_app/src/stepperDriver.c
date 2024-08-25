@@ -67,44 +67,54 @@ HAL_StatusTypeDef cuvetteRotate(TIM_HandleTypeDef* tim_handle, DAC_HandleTypeDef
 
 
 //
-//HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume, uint8_t pumpNum) {
-//    uint32_t delay = volume * MSPERUL;
-//    uint8_t channel = 0;
-//
-//	// wait until cuvette is stopped
-//	while(cuvetteState == CUVETTE_STATE_RUNNING){
-//		vTaskDelay(100);
-//	}
-//
-//    switch (pumpNum) {
-//        case 1:
-//            channel = TIM_CHANNEL_4;
-//            HAL_GPIO_WritePin(MS1_2_GPIO_Port, MS1_2_Pin,GPIO_PIN_RESET );
-//            HAL_GPIO_WritePin(MS2_2_GPIO_Port, MS2_2_Pin,GPIO_PIN_RESET );
-//            HAL_GPIO_WritePin(DIR_2_GPIO_Port, DIR_2_Pin,GPIO_PIN_SET );
-//            break;
-//        case 2:
-//            channel = TIM_CHANNEL_4;
-//            break;
-//            HAL_GPIO_WritePin(MS1_3_GPIO_Port, MS1_3_Pin,GPIO_PIN_RESET );
-//            HAL_GPIO_WritePin(MS2_3_GPIO_Port, MS2_3_Pin,GPIO_PIN_RESET );
-//            HAL_GPIO_WritePin(DIR_3_GPIO_Port, DIR_3_Pin,GPIO_PIN_SET );
-//        default:
-//            return HAL_ERROR;
-//    }
-//
-//    // Start the PWM for dispensing
-//    HAL_TIM_PWM_Start(htimHandle, channel);
-//
-//
-//
-//    vTaskDelay(delay); // Simple delay for the volume dispensation
-//    HAL_TIM_PWM_Stop(htimHandle, channel);
-//
-//    return HAL_OK;
-//}
-//
-//
+HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume, uint8_t pumpNum) {
+   uint32_t delay = volume * MSPERUL;
+   uint8_t channel = 0;
+    
+    if( HAL_DAC_Start(dac_handle, DAC_CHANNEL_1) != HAL_OK){
+    	Error_Handler();
+    }
+
+    if (HAL_DAC_SetValue(dac_handle, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 2000) != HAL_OK){
+    	Error_Handler();
+    }
+
+    if( HAL_DAC_Start(dac_handle, DAC_CHANNEL_2) != HAL_OK){
+    	Error_Handler();
+    }
+
+    if (HAL_DAC_SetValue(dac_handle, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 2000) != HAL_OK){
+    	Error_Handler();
+    }
+
+   switch (pumpNum) {
+       case 1:
+           channel = TIM_CHANNEL_4;
+           HAL_GPIO_WritePin(MS1_2_GPIO_Port, MS1_2_Pin,GPIO_PIN_RESET );
+           HAL_GPIO_WritePin(MS2_2_GPIO_Port, MS2_2_Pin,GPIO_PIN_RESET );
+           HAL_GPIO_WritePin(DIR_2_GPIO_Port, DIR_2_Pin,GPIO_PIN_SET );
+           break;
+       case 2:
+           channel = TIM_CHANNEL_4;
+           break;
+           HAL_GPIO_WritePin(MS1_3_GPIO_Port, MS1_3_Pin,GPIO_PIN_RESET );
+           HAL_GPIO_WritePin(MS2_3_GPIO_Port, MS2_3_Pin,GPIO_PIN_RESET );
+           HAL_GPIO_WritePin(DIR_3_GPIO_Port, DIR_3_Pin,GPIO_PIN_SET );
+       default:
+           return HAL_ERROR;
+   }
+
+   // Start the PWM for dispensing
+   HAL_TIM_PWM_Start(htimHandle, channel);
+   
+   HAL_Delay(delay); // Simple delay for the volume dispensation
+
+   HAL_TIM_PWM_Stop(htimHandle, channel);
+
+   return HAL_OK;
+}
+
+
 //HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDef* htim20, uint32_t volume1, uint32_t volume2) {
 //
 //	// wait until cuvette is stopped
