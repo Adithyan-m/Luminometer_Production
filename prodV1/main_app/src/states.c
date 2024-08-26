@@ -68,26 +68,30 @@ void stateStartUp(void) {
 	uint32_t new_dark_count = 0000;
 	new_dark_count = PULSES_darkcount(&htim2);
 
-//	if (new_dark_count > DARK_THRESH){
-//	    StateMachine.bEventOccurred = true;
-//	    StateMachine.eEvent = EVENT_STARTUP_FAILED_DARK;
-//        return;
-//	}
+    // Comment out
+	if (new_dark_count > DARK_THRESH){
+	    StateMachine.bEventOccurred = true;
+	    StateMachine.eEvent = EVENT_STARTUP_FAILED_DARK;
+       return;
+	}
 
 	// Saving new dark count
 	HAL_StatusTypeDef status = WriteDarkCount(new_dark_count);
-//	if (status != HAL_OK) {
-//	    // Handle error
-//	    StateMachine.bEventOccurred = true;
-//	    StateMachine.eEvent = EVENT_STARTUP_FAILED_FLASH;
-//        return;
-//	}
+
+    // Comment out
+	if (status != HAL_OK) {
+	    // Handle error
+	    StateMachine.bEventOccurred = true;
+	    StateMachine.eEvent = EVENT_STARTUP_FAILED_FLASH;
+       return;
+	}
 
 	// Starter Level
+    // Comment out
     if(calculate_level(&hi2c1) < 5 ){
-//        StateMachine.bEventOccurred = true;
-//        StateMachine.eState = EVENT_STARTUP_FAILED_STARTER;
-//        return;
+       StateMachine.bEventOccurred = true;
+       StateMachine.eState = EVENT_STARTUP_FAILED_STARTER;
+       return;
     }
 
 
@@ -208,6 +212,9 @@ void stateSystemCheck(void){
 
                     case 0xFF:
                         // back button
+                        StateMachine.bEventOccurred = true;
+                        StateMachine.eEvent = EVENT_BACK; 
+                        return;
 
                     default:
                         break;

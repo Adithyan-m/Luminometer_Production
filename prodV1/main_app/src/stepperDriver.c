@@ -114,6 +114,18 @@ HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume
    return HAL_OK;
 }
 
+HAL_StatusTypeDef primePump(TIM_HandleTypeDef *htim){
+
+  dispenseStarter(htim, 20, 1);
+  dispenseStarter(htim, 20, 2);
+  dispenseStarter(htim, 20, 1);
+  dispenseStarter(htim, 20, 2);
+  dispenseStarter(htim, 20, 1);
+  dispenseStarter(htim, 20, 2);
+
+  return HAL_OK;
+}
+
 
 //HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDef* htim20, uint32_t volume1, uint32_t volume2) {
 //
