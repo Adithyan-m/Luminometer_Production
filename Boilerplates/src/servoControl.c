@@ -92,7 +92,7 @@ HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDe
 
     uint32_t time1 = volume1 * MSPERUL;
     uint32_t time2 = volume2 * MSPERUL;
-    uint32_t timeToRrun = (time1 > time2) ? time2 : time1;
+    uint32_t timeToRun = (time1 > time2) ? time2 : time1;
     uint32_t diff = (time1 > time2) ? (time1 - time2) : (time2 - time1);
 
     // Start the PWM for dispensing
@@ -108,7 +108,7 @@ HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDe
     HAL_GPIO_WritePin(MS2_3_GPIO_Port, MS2_3_Pin,GPIO_PIN_RESET );
     HAL_GPIO_WritePin(DIR_2_GPIO_Port, DIR_2_Pin,GPIO_PIN_SET );
 
-    vTaskDelay(timeToRrun); // Simple delay for the volume dispensation
+    HAL_Delay(timeToRun); // Simple delay for the volume dispensation
 
     // To stop one pump if it has less volume
     if(time1>time2){
@@ -118,7 +118,7 @@ HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDe
     }
 
     // Continuing to dispense the starter
-    vTaskDelay(diff);
+    HAL_Delay(diff);
 
     // To stop the remaining pump
     if(time1>time2){
