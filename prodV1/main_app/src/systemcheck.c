@@ -53,7 +53,7 @@ void autoCheck(void){
     while(HAL_UART_Receive(&huart2, dataBuffer, 10, HAL_MAX_DELAY != HAL_OK){
         __NOP();
     }
-
+    // hello world i made a change here 
     if(databuffer[9] == AA){
         
         primePump(&htim2);
