@@ -10,7 +10,8 @@ C_SRCS += \
 ../main_app/src/main_app.c \
 ../main_app/src/pulses.c \
 ../main_app/src/states.c \
-../main_app/src/stepperDriver.c 
+../main_app/src/stepperDriver.c \
+../main_app/src/systemcheck.c 
 
 OBJS += \
 ./main_app/src/flash.o \
@@ -18,7 +19,8 @@ OBJS += \
 ./main_app/src/main_app.o \
 ./main_app/src/pulses.o \
 ./main_app/src/states.o \
-./main_app/src/stepperDriver.o 
+./main_app/src/stepperDriver.o \
+./main_app/src/systemcheck.o 
 
 C_DEPS += \
 ./main_app/src/flash.d \
@@ -26,7 +28,8 @@ C_DEPS += \
 ./main_app/src/main_app.d \
 ./main_app/src/pulses.d \
 ./main_app/src/states.d \
-./main_app/src/stepperDriver.d 
+./main_app/src/stepperDriver.d \
+./main_app/src/systemcheck.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -36,7 +39,7 @@ main_app/src/%.o main_app/src/%.su main_app/src/%.cyclo: ../main_app/src/%.c mai
 clean: clean-main_app-2f-src
 
 clean-main_app-2f-src:
-	-$(RM) ./main_app/src/flash.cyclo ./main_app/src/flash.d ./main_app/src/flash.o ./main_app/src/flash.su ./main_app/src/levelSense.cyclo ./main_app/src/levelSense.d ./main_app/src/levelSense.o ./main_app/src/levelSense.su ./main_app/src/main_app.cyclo ./main_app/src/main_app.d ./main_app/src/main_app.o ./main_app/src/main_app.su ./main_app/src/pulses.cyclo ./main_app/src/pulses.d ./main_app/src/pulses.o ./main_app/src/pulses.su ./main_app/src/states.cyclo ./main_app/src/states.d ./main_app/src/states.o ./main_app/src/states.su ./main_app/src/stepperDriver.cyclo ./main_app/src/stepperDriver.d ./main_app/src/stepperDriver.o ./main_app/src/stepperDriver.su
+	-$(RM) ./main_app/src/flash.cyclo ./main_app/src/flash.d ./main_app/src/flash.o ./main_app/src/flash.su ./main_app/src/levelSense.cyclo ./main_app/src/levelSense.d ./main_app/src/levelSense.o ./main_app/src/levelSense.su ./main_app/src/main_app.cyclo ./main_app/src/main_app.d ./main_app/src/main_app.o ./main_app/src/main_app.su ./main_app/src/pulses.cyclo ./main_app/src/pulses.d ./main_app/src/pulses.o ./main_app/src/pulses.su ./main_app/src/states.cyclo ./main_app/src/states.d ./main_app/src/states.o ./main_app/src/states.su ./main_app/src/stepperDriver.cyclo ./main_app/src/stepperDriver.d ./main_app/src/stepperDriver.o ./main_app/src/stepperDriver.su ./main_app/src/systemcheck.cyclo ./main_app/src/systemcheck.d ./main_app/src/systemcheck.o ./main_app/src/systemcheck.su
 
 .PHONY: clean-main_app-2f-src
 

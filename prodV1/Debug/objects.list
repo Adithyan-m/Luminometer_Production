@@ -54,3 +54,4 @@
 "./main_app/src/pulses.o"
 "./main_app/src/states.o"
 "./main_app/src/stepperDriver.o"
+"./main_app/src/systemcheck.o"

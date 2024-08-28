@@ -17,6 +17,7 @@
 #define STRING_SIZE 100
 
 void autoCheck(void) {
+
     uint8_t databuffer[BUFFER_SIZE] = {0};
 
     // Switch page to "place cuvette and press okay"
@@ -30,9 +31,14 @@ void autoCheck(void) {
     }
     HMI_eraseString(&huart2);
 
-    if(databuffer[9] != 0xAA) {
+    if(databuffer[9] == KEY_BACK){
+        // return back to sys check menu
+        HMI_changepage(&huart1, PAGE_SYSTEMS_CHECK);
+        return;
+    }
+    else if(databuffer[9] != KEY_YES) {
         StateMachine.bEventOccurred = true;
-        StateMachine.eEvent = EVENT_SYSCHECK_CUV_FAILED;
+        StateMachine.eEvent = EVENT_HMI_FALIURE;
         return;  
     }
 
@@ -73,15 +79,21 @@ void autoCheck(void) {
             __NOP();
         }
         
-        if(databuffer[9] != 0xAA) {
-            primed = true;
-            break;
+        if(databuffer[9] == KEY_BACK) {
+            // return back to sys check menu
+            HMI_changepage(&huart1, PAGE_SYSTEMS_CHECK);
+            return;
+
+        } else if(databuffer[9] != KEY_YES){
+            StateMachine.bEventOccurred = true;
+            StateMachine.eEvent = EVENT_HMI_FALIURE;
+            return;  
         }
 
         // TODO : correct handle
-        cuvetteRotate(&htim2);
+        cuvetteRotate(&htim2, &hadc1);
         primePump(&htim2);
-        cuvetteRotate(&htim2);
+        cuvetteRotate(&htim2, &hadc1);
         
         // Check for user input
         HMI_eraseString(&huart1);
@@ -90,7 +102,12 @@ void autoCheck(void) {
         HMI_writeString(&huart2, 2100, stringToSend);
         free(stringToSend);
 
-        if(databuffer[9] == 0xAA) {
+        // wait for key press
+        while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+            __NOP();
+        } 
+
+        if(databuffer[9] == KEY_YES) {
             primed = true;
             break;
         }
@@ -144,9 +161,9 @@ void autoCheck(void) {
 
 }   
 
-uint32_t backgroundCheck(TIM_HandleTypeDef *htim) {
+void backgroundCheck(void) {
     // Perform background check
-    uint32_t background = PULSES_background(htim);
+    uint32_t background = PULSES_background(&HANDLE_PULSES);
 
     // Display result
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
@@ -160,10 +177,12 @@ uint32_t backgroundCheck(TIM_HandleTypeDef *htim) {
     HAL_Delay(3000);
     HMI_eraseString(&huart2);
 
-    return background;
+    return ;
 }
 
-void pumpPriming(TIM_HandleTypeDef *htim) {
+void pumpPriming(void) {
+    
+    
     uint8_t databuffer[BUFFER_SIZE] = {0};
     bool primed = false;
 
@@ -208,6 +227,7 @@ void pumpPriming(TIM_HandleTypeDef *htim) {
 }
 
 void darkCheck(TIM_HandleTypeDef *htim) {
+
     uint32_t darkReading = PULSES_background(htim);
 
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
@@ -222,6 +242,7 @@ void darkCheck(TIM_HandleTypeDef *htim) {
 }
 
 void lightCheck(TIM_HandleTypeDef *htim) {
+
     uint8_t databuffer[BUFFER_SIZE] = {0};
 
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));

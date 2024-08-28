@@ -8,6 +8,9 @@
 #ifndef MAIN_APP_INCLUDES_STEPPERDRIVER_H_
 #define MAIN_APP_INCLUDES_STEPPERDRIVER_H_
 
+#include "main_app.h"
+
+#define MSPERUL 4.4053
 
 typedef enum {
     CUVETTE_STATE_IDLE,
@@ -41,7 +44,7 @@ void cuvetteRotateHandler(void);
  *
  * @retval HAL_StatusTypeDef
  */
-HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume, uint8_t pumpNum);
+HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, DAC_HandleTypeDef* dac_handle, uint32_t volume, uint8_t pumpNum);
 
 
 /**
@@ -54,7 +57,7 @@ HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume
  *
  * @retval HAL_StatusTypeDef
  */
-HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2,TIM_HandleTypeDef* htim20, uint32_t volume1, uint32_t volume2);
+HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2, DAC_HandleTypeDef* dac_handle,TIM_HandleTypeDef* htim20, uint32_t volume1, uint32_t volume2);
 
 
 HAL_StatusTypeDef primePump(TIM_HandleTypeDef *htim);

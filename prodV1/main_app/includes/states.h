@@ -103,10 +103,10 @@ static const STATE_TRANSITION_t StateTransitionTable[] = {
     { ST_HOMEMENU,      EVENT_HMI_FALIURE,              ST_SERVICES },
 
     { ST_SYSTEM_CHECK,  NO_EVENT,                       ST_SYSTEM_CHECK },
+    { ST_SYSTEM_CHECK,  EVENT_BACK,                     ST_HOMEMENU },
     { ST_SYSTEM_CHECK,  EVENT_SYSCEHCK_CUV_FAILED,      ST_ERROR },
     { ST_SYSTEM_CHECK,  EVENT_SYSCHECK_PRIME_FAILED,    ST_ERROR },
     { ST_SYSTEM_CHECK,  EVENT_HMI_FALIURE,              ST_ERROR },
-
 
     { ST_ERROR,         NO_EVENT,                       ST_ERROR },
     { ST_ERROR,         EVENT_ERROR_IGNORE,             ST_HOMEMENU }

@@ -3,7 +3,9 @@
         "stdint.h": "c",
         "levelsense.h": "c",
         "main_app.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "pulses.h": "c",
+        "states.h": "c"
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",

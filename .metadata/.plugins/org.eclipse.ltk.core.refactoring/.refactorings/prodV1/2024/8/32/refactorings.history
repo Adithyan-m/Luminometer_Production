@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;prodV1/main_app/Src&apos; to &apos;src&apos;" description="Rename resource &apos;Src&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="main_app/Src" name="src" stamp="1722968199475" updateReferences="true"/>&#x0A;<refactoring comment="Move &apos;main_app.c&apos; to &apos;src&apos;" description="Move &apos;main_app.c&apos; to &apos;src&apos;" destination="main_app/src" element1="main_app/main_app.c" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="1" stamp="1722968201833" updateReferences="true"/>
-</session>

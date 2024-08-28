@@ -68,7 +68,13 @@ HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, con
         return HAL_ERROR;
     }
 
-    uint8_t clearBuffer[6] = {0x5A, 0xA5, 0x03, 0x82, 0x4F, 0x4B};
+    uint8_t *clearBuffer = uint8_t* buffer = (uint8_t*)malloc(6);
+    clearBuffer[0] = 0x5A;
+    clearBuffer[1] = 0xA5;
+    clearBuffer[2] = 0X03;
+    clearBuffer[3] = 0x82;
+    clearBuffer[4] = 0x4F;
+    clearBuffer[5] = 0x4B;
 
     uint16_t stringLength = strlen(string);
     uint16_t totalLength = stringLength + 6; // 3 bytes for the header (excluding 5A A5)
@@ -79,7 +85,7 @@ HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, con
     }
 
     // Allocate a buffer for the entire message
-    uint8_t* buffer = malloc(totalLength + 6); // +4 for the 5A A5 size 82 VV PP
+    uint8_t* buffer = (uint8_t*)malloc(totalLength + 6); // +4 for the 5A A5 size 82 VV PP
     if (buffer == NULL) {
         return HAL_ERROR;
     }
@@ -96,18 +102,29 @@ HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, con
     memcpy(buffer + 6, string, stringLength);
 
     // Transmit the entire message
-    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, totalLength + 4, HAL_MAX_DELAY);
-    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, clearBuffer, 6, HAL_MAX_DELAY);
+    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, totalLength + 6, HAL_MAX_DELAY);
+
+    // Transmit the clear buffer
+    HAL_StatusTypeDef clearStatus = HAL_UART_Transmit(uart, clearBuffer, 6, HAL_MAX_DELAY);
 
     // Free the allocated buffer
     free(buffer);
+    free(clearBuffer);
 
-    return status;
+    // Return the status of the first transmission, or the clear transmission if the first was successful
+    return (status == HAL_OK) ? clearStatus : status;
 }
 
 HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
 
     uint8_t buffer[6] = {0};
+    uint8_t *clearBuffer = uint8_t* buffer = (uint8_t*)malloc(6)cleaB
+    clearBuffer[0] = 0x5A;
+    clearBuffer[1] = 0xA5;
+    clearBuffer[2] = 0X03;
+    clearBuffer[3] = 0x82;
+    clearBuffer[4] = 0x4F;
+    clearBuffer[5] = 0x4B
     // Prepare the message
     buffer[0] = 0x5A;
     buffer[1] = 0xA5;
@@ -117,7 +134,9 @@ HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
     buffer[5] = 0x00FF & vpAddr;
 
         // Transmit the entire message
-    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, 6 HAL_MAX_DELAY);
+    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, 6, HAL_MAX_DELAY);
     HAL_StatusTypeDef status = HAL_UART_Transmit(uart, clearBuffer, 6, HAL_MAX_DELAY);
+
+    free(clearBuffer);
 
 }

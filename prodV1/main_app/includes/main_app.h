@@ -23,6 +23,15 @@
 // Dark Threshold
 #define DARK_THRESH 800
 
+// Key Definintions 
+#define KEY_BACK 0xFF
+#define KEY_YES  0xEE
+#define KEY_NO   0xDD
+
+// Handle defintions 
+#define HANDLE_PULSES htim2
+#define HANDLE_HMI	  huart2
+
 // PAGE NUMBERS
 enum {
 	PAGE_SPASH,

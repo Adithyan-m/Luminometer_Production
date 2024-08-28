@@ -1,0 +1,6 @@
+.metadata/
+*.o
+*.ld
+*.srec
+*.obj
+	

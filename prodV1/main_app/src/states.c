@@ -174,6 +174,8 @@ void stateHomeMenu(void) {
 void stateSystemCheck(void){
     
     // Wait till a valid keypress to avoid random messages
+    uint8_t dataBuffer[10] = {0};
+
     while(1){
 
         // Wait till we recieve 10 bytes of data (1 key press)
@@ -187,30 +189,30 @@ void stateSystemCheck(void){
                     
                     case 0x40:
                         // Auto Check                      
-                        void autoCheck(void);
+                        autoCheck(void);
                         break;
                     
                     case 0x41:
                         // Background Check
-                        void backgroundCheck(void);
+                        backgroundCheck(void);
                         break;
 
                     case 0x42:
                         // Pump Primimg
-                        void pumpPriming(void);
+                        pumpPriming(void);
                         break;
 
                     case 0x43:
                         // Dark Check
-                        void darkCheck(void);
+                        darkCheck(void);
                         break;
                     
                     case 0x44:
                         // Light Check
-                        void lightCheck(void);
+                        lightCheck(void);
                         break;
 
-                    case 0xFF:
+                    case KEY_BACK:
                         // back button
                         StateMachine.bEventOccurred = true;
                         StateMachine.eEvent = EVENT_BACK; 

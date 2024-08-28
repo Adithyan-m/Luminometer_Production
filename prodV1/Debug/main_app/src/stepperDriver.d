@@ -45,7 +45,8 @@ main_app/src/stepperDriver.o: ../main_app/src/stepperDriver.c \
  C:/WD/Lumino_Prod/prodV1/main_app/includes/flash.h \
  C:/WD/Lumino_Prod/prodV1/main_app/includes/stepperDriver.h \
  C:/WD/Lumino_Prod/prodV1/main_app/includes/pulses.h \
- C:/WD/Lumino_Prod/prodV1/main_app/includes/levelSense.h
+ C:/WD/Lumino_Prod/prodV1/main_app/includes/levelSense.h \
+ C:/WD/Lumino_Prod/prodV1/main_app/includes/stepperDriver.h
 C:/WD/Lumino_Prod/prodV1/main_app/includes/main_app.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -94,3 +95,4 @@ C:/WD/Lumino_Prod/prodV1/main_app/includes/flash.h:
 C:/WD/Lumino_Prod/prodV1/main_app/includes/stepperDriver.h:
 C:/WD/Lumino_Prod/prodV1/main_app/includes/pulses.h:
 C:/WD/Lumino_Prod/prodV1/main_app/includes/levelSense.h:
+C:/WD/Lumino_Prod/prodV1/main_app/includes/stepperDriver.h:

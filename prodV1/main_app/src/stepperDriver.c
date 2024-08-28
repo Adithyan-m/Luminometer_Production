@@ -6,6 +6,7 @@
  */
 
 #include "main_app.h"
+#include "stepperDriver.h"
 
 
 HAL_StatusTypeDef cuvetteRotate(TIM_HandleTypeDef* tim_handle, DAC_HandleTypeDef* dac_handle) {
@@ -67,7 +68,7 @@ HAL_StatusTypeDef cuvetteRotate(TIM_HandleTypeDef* tim_handle, DAC_HandleTypeDef
 
 
 //
-HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume, uint8_t pumpNum) {
+HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, DAC_HandleTypeDef* dac_handle, uint32_t volume, uint8_t pumpNum) {
    uint32_t delay = volume * MSPERUL;
    uint8_t channel = 0;
     
@@ -92,14 +93,14 @@ HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume
            channel = TIM_CHANNEL_4;
            HAL_GPIO_WritePin(MS1_2_GPIO_Port, MS1_2_Pin,GPIO_PIN_RESET );
            HAL_GPIO_WritePin(MS2_2_GPIO_Port, MS2_2_Pin,GPIO_PIN_RESET );
-           HAL_GPIO_WritePin(DIR_2_GPIO_Port, DIR_2_Pin,GPIO_PIN_SET );
+           HAL_GPIO_WritePin(DIR2_GPIO_Port, DIR2_Pin,GPIO_PIN_SET );
            break;
        case 2:
            channel = TIM_CHANNEL_4;
            break;
            HAL_GPIO_WritePin(MS1_3_GPIO_Port, MS1_3_Pin,GPIO_PIN_RESET );
            HAL_GPIO_WritePin(MS2_3_GPIO_Port, MS2_3_Pin,GPIO_PIN_RESET );
-           HAL_GPIO_WritePin(DIR_3_GPIO_Port, DIR_3_Pin,GPIO_PIN_SET );
+           HAL_GPIO_WritePin(DIR3_GPIO_Port, DIR3_Pin,GPIO_PIN_SET );
        default:
            return HAL_ERROR;
    }
@@ -114,14 +115,14 @@ HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, uint32_t volume
    return HAL_OK;
 }
 
-HAL_StatusTypeDef primePump(TIM_HandleTypeDef *htim){
+HAL_StatusTypeDef primePump(TIM_HandleTypeDef *htim, DAC_HandleTypeDef* dac_handle){
 
-  dispenseStarter(htim, 20, 1);
-  dispenseStarter(htim, 20, 2);
-  dispenseStarter(htim, 20, 1);
-  dispenseStarter(htim, 20, 2);
-  dispenseStarter(htim, 20, 1);
-  dispenseStarter(htim, 20, 2);
+  dispenseStarter(htim,dac_handle, 20, 1);
+  dispenseStarter(htim,dac_handle, 20, 2);
+  dispenseStarter(htim,dac_handle, 20, 1);
+  dispenseStarter(htim,dac_handle, 20, 2);
+  dispenseStarter(htim,dac_handle, 20, 1);
+  dispenseStarter(htim,dac_handle, 20, 2);
 
   return HAL_OK;
 }

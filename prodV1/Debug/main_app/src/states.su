@@ -1,5 +1,0 @@
-../main_app/src/states.c:15:6:StateTransition	16	static
-../main_app/src/states.c:33:6:stateInit	16	static
-../main_app/src/states.c:54:6:stateStartUp	16	static
-../main_app/src/states.c:104:6:stateHomeMenu	4	static
-../main_app/src/states.c:108:6:stateError	4	static
