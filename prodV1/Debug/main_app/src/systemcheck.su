@@ -1,0 +1,5 @@
+../main_app/src/systemcheck.c:17:6:autoCheck	48	static,ignoring_inline_asm
+../main_app/src/systemcheck.c:162:6:backgroundCheck	16	static
+../main_app/src/systemcheck.c:181:6:pumpPriming	32	static,ignoring_inline_asm
+../main_app/src/systemcheck.c:227:6:darkCheck	16	static
+../main_app/src/systemcheck.c:242:6:lightCheck	40	static,ignoring_inline_asm

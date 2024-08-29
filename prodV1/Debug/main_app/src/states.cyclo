@@ -1,0 +1,6 @@
+../main_app/src/states.c:15:6:StateTransition	5
+../main_app/src/states.c:33:6:stateInit	1
+../main_app/src/states.c:54:6:stateStartUp	5
+../main_app/src/states.c:108:6:stateHomeMenu	9
+../main_app/src/states.c:174:6:stateSystemCheck	11
+../main_app/src/states.c:230:6:stateError	1

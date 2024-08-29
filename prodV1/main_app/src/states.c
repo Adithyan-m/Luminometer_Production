@@ -189,27 +189,27 @@ void stateSystemCheck(void){
                     
                     case 0x40:
                         // Auto Check                      
-                        autoCheck(void);
+                        autoCheck();
                         break;
                     
                     case 0x41:
                         // Background Check
-                        backgroundCheck(void);
+                        backgroundCheck();
                         break;
 
                     case 0x42:
                         // Pump Primimg
-                        pumpPriming(void);
+                        pumpPriming();
                         break;
 
                     case 0x43:
                         // Dark Check
-                        darkCheck(void);
+                        darkCheck();
                         break;
                     
                     case 0x44:
                         // Light Check
-                        lightCheck(void);
+                        lightCheck();
                         break;
 
                     case KEY_BACK:

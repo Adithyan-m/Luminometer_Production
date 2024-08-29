@@ -29,8 +29,13 @@
 #define KEY_NO   0xDD
 
 // Handle defintions 
-#define HANDLE_PULSES htim2
-#define HANDLE_HMI	  huart2
+#define HANDLE_PULSES 	htim2
+#define HANDLE_HMI	  	huart2
+#define HANDLE_CUVETTE 	htim1
+#define HANDLE_DAC		hdac
+#define HANDLE_PUMP1	htim9
+#define HANDLE_PUMP2	htim4
+
 
 // PAGE NUMBERS
 enum {

@@ -1,0 +1,5 @@
+../main_app/src/systemcheck.c:17:6:autoCheck	13
+../main_app/src/systemcheck.c:162:6:backgroundCheck	1
+../main_app/src/systemcheck.c:181:6:pumpPriming	7
+../main_app/src/systemcheck.c:227:6:darkCheck	1
+../main_app/src/systemcheck.c:242:6:lightCheck	3

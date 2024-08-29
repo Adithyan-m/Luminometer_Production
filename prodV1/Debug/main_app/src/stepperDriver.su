@@ -1,0 +1,4 @@
+../main_app/src/stepperDriver.c:12:19:cuvetteRotate	32	static
+../main_app/src/stepperDriver.c:61:19:dispenseStarter	32	static
+../main_app/src/stepperDriver.c:98:19:primePump	24	static
+../main_app/src/stepperDriver.c:111:19:dispenseStarterSimul	40	static

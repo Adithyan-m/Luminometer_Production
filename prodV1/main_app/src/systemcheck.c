@@ -9,9 +9,7 @@
 // TODO: Add disabling back button
 
 #include "systemcheck.h"
-#include "states.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 
 #define BUFFER_SIZE 10
 #define STRING_SIZE 100
@@ -23,13 +21,13 @@ void autoCheck(void) {
     // Switch page to "place cuvette and press okay"
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "place cuvette and press continue");
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
-    while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+    while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
         __NOP();
     }
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 
     if(databuffer[9] == KEY_BACK){
         // return back to sys check menu
@@ -43,30 +41,30 @@ void autoCheck(void) {
     }
 
     // TODO: add correct timer handle
-    cuvetteRotate(&htim1);
+    cuvetteRotate(&HANDLE_CUVETTE, &HANDLE_DAC);
 
     // Background check
-    uint32_t newBackground = PULSES_background(&htim2);
+    uint32_t newBackground = PULSES_background(&HANDLE_PULSES);
 
     // Displaying on screen
     stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "the background is %lu units", newBackground);
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     // Write background value to memory
     WriteBackground(newBackground);
     
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 
     // Wait to erase screen 
     HAL_Delay(3000);
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 
     // Press start priming pump
     stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Press continue to do priming");
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     // Disable yes no button
@@ -75,7 +73,7 @@ void autoCheck(void) {
         // loop for primimng the pump
         
         // wait for key press
-        while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+        while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
             __NOP();
         }
         
@@ -91,19 +89,19 @@ void autoCheck(void) {
         }
 
         // TODO : correct handle
-        cuvetteRotate(&htim2, &hadc1);
-        primePump(&htim2);
-        cuvetteRotate(&htim2, &hadc1);
+        cuvetteRotate(&HANDLE_CUVETTE, &HANDLE_DAC);
+        primePump(&HANDLE_PUMP1, &HANDLE_PUMP2, &HANDLE_DAC);
+        cuvetteRotate(&HANDLE_CUVETTE, &HANDLE_DAC);
         
         // Check for user input
-        HMI_eraseString(&huart1);
+        HMI_eraseString(&HANDLE_HMI, 0x2100);
         stringToSend = malloc(STRING_SIZE * sizeof(char));
         sprintf(stringToSend, "Is there liquid in the cuvette");
-        HMI_writeString(&huart2, 2100, stringToSend);
+        HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
         free(stringToSend);
 
         // wait for key press
-        while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+        while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
             __NOP();
         } 
 
@@ -120,19 +118,19 @@ void autoCheck(void) {
         return;  
     }
 
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 
     // Change page to cotinue page
 
     // Check for user input
-    HMI_eraseString(&huart1);
+    HMI_eraseString(&HANDLE_HMI, 0x2100);
     stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Press continue for light check");
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     // Press start Light Check
-    while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+    while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
         __NOP();
     }
 
@@ -142,19 +140,19 @@ void autoCheck(void) {
         return;  
     }
 
-    dispenseStarterSimul(&htim1, 20, 20);
-    newBackground = backgroundCheck(&htim1);
+    dispenseStarterSimul(&HANDLE_PUMP1, &HANDLE_DAC, &HANDLE_PUMP2, 20, 20);
+    newBackground = PULSES_background(&htim1);
    
    // Displaying on screen
     stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "the lightcheck is %lu units", newBackground);
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     WriteLightCheck(newBackground);
 
     HAL_Delay(3000);
-    HMI_eraseString(&huart1);
+    HMI_eraseString(&HANDLE_HMI, 0x2100);
     HMI_changepage(&huart1, PAGE_SYSTEMS_CHECK);
 
     return;
@@ -168,14 +166,14 @@ void backgroundCheck(void) {
     // Display result
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Background: %lu units", background);
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     // Write background value to memory
     WriteBackground(background);
 
     HAL_Delay(3000);
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 
     return ;
 }
@@ -189,10 +187,10 @@ void pumpPriming(void) {
     for (int i = 0; i < 2; i++) {
         char *stringToSend = malloc(STRING_SIZE * sizeof(char));
         sprintf(stringToSend, "Priming attempt %d. Press continue.", i + 1);
-        HMI_writeString(&huart2, 2100, stringToSend);
+        HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
         free(stringToSend);
 
-        while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+        while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
             __NOP();
         }
 
@@ -200,17 +198,17 @@ void pumpPriming(void) {
             break;
         }
 
-        cuvetteRotate(htim);
-        primePump(htim);
-        cuvetteRotate(htim);
+        cuvetteRotate(&HANDLE_CUVETTE, &HANDLE_DAC);
+        primePump(&HANDLE_PUMP1, &HANDLE_PUMP2, &HANDLE_DAC);
+        cuvetteRotate(&HANDLE_CUVETTE, &HANDLE_DAC);
 
-        HMI_eraseString(&huart2);
+        HMI_eraseString(&HANDLE_HMI,0x2100);
         stringToSend = malloc(STRING_SIZE * sizeof(char));
         sprintf(stringToSend, "Is there liquid in the cuvette?");
-        HMI_writeString(&huart2, 2100, stringToSend);
+        HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
         free(stringToSend);
 
-        while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+        while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
             __NOP();
         }
 
@@ -226,31 +224,31 @@ void pumpPriming(void) {
     }
 }
 
-void darkCheck(TIM_HandleTypeDef *htim) {
+void darkCheck(void) {
 
-    uint32_t darkReading = PULSES_background(htim);
+    uint32_t darkReading = PULSES_background(&HANDLE_PULSES);
 
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Dark reading: %lu units", darkReading);
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     WriteDarkCount(darkReading);
 
     HAL_Delay(3000);
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 }
 
-void lightCheck(TIM_HandleTypeDef *htim) {
+void lightCheck(void) {
 
     uint8_t databuffer[BUFFER_SIZE] = {0};
 
     char *stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Press continue for light check");
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
-    while(HAL_UART_Receive(&huart2, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
+    while(HAL_UART_Receive(&HANDLE_HMI, databuffer, BUFFER_SIZE, HAL_MAX_DELAY) != HAL_OK) {
         __NOP();
     }
 
@@ -260,16 +258,16 @@ void lightCheck(TIM_HandleTypeDef *htim) {
         return;  
     }
 
-    dispenseStarterSimul(htim, 20, 20);
-    uint32_t lightReading = PULSES_background(htim);
+    dispenseStarterSimul(&HANDLE_PUMP1,&HANDLE_DAC,&HANDLE_PUMP2, 20, 20);
+    uint32_t lightReading = PULSES_background(&HANDLE_PULSES);
 
     stringToSend = malloc(STRING_SIZE * sizeof(char));
     sprintf(stringToSend, "Light check: %lu units", lightReading);
-    HMI_writeString(&huart2, 2100, stringToSend);
+    HMI_writeString(&HANDLE_HMI, 0x2100, stringToSend);
     free(stringToSend);
 
     WriteLightCheck(lightReading);
 
     HAL_Delay(3000);
-    HMI_eraseString(&huart2);
+    HMI_eraseString(&HANDLE_HMI,0x2100);
 }

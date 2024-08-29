@@ -1,0 +1,4 @@
+../main_app/src/main_app.c:22:6:main_app	1
+../main_app/src/main_app.c:40:19:HMI_changepage	1
+../main_app/src/main_app.c:66:19:HMI_writeString	3
+../main_app/src/main_app.c:115:19:HMI_eraseString	1

@@ -9,6 +9,10 @@
 #define MAIN_APP_INCLUDES_SYSTEMCHECK_H_
 
 #include "main_app.h"
+#include "states.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 
 void autoCheck(void);
 void backgroundCheck(void);

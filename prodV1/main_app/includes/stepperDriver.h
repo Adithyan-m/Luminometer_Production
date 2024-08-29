@@ -60,6 +60,6 @@ HAL_StatusTypeDef dispenseStarter(TIM_HandleTypeDef* htimHandle, DAC_HandleTypeD
 HAL_StatusTypeDef dispenseStarterSimul(TIM_HandleTypeDef* htim2, DAC_HandleTypeDef* dac_handle,TIM_HandleTypeDef* htim20, uint32_t volume1, uint32_t volume2);
 
 
-HAL_StatusTypeDef primePump(TIM_HandleTypeDef *htim);
+HAL_StatusTypeDef primePump(TIM_HandleTypeDef *timPump1, TIM_HandleTypeDef *timPump2, DAC_HandleTypeDef *dac_handle);
 
 #endif /* MAIN_APP_INCLUDES_STEPPERDRIVER_H_ */

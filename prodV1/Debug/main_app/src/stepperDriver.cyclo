@@ -1,0 +1,4 @@
+../main_app/src/stepperDriver.c:12:19:cuvetteRotate	6
+../main_app/src/stepperDriver.c:61:19:dispenseStarter	5
+../main_app/src/stepperDriver.c:98:19:primePump	1
+../main_app/src/stepperDriver.c:111:19:dispenseStarterSimul	6

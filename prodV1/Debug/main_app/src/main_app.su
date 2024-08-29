@@ -1,0 +1,4 @@
+../main_app/src/main_app.c:22:6:main_app	8	static
+../main_app/src/main_app.c:40:19:HMI_changepage	32	static
+../main_app/src/main_app.c:66:19:HMI_writeString	40	static
+../main_app/src/main_app.c:115:19:HMI_eraseString	32	static
