@@ -65,14 +65,6 @@ HAL_StatusTypeDef HMI_changepage(UART_HandleTypeDef *uart, uint16_t pagenum){
 
 HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, const char* string) {
 
-    uint8_t *clearBuffer = (uint8_t*)malloc(6);
-    clearBuffer[0] = 0x5A;
-    clearBuffer[1] = 0xA5;
-    clearBuffer[2] = 0X03;
-    clearBuffer[3] = 0x82;
-    clearBuffer[4] = 0x4F;
-    clearBuffer[5] = 0x4B;
-
     uint16_t stringLength = strlen(string);
     uint16_t totalLength = stringLength + 6; // 3 bytes for the header (excluding 5A A5)
 
@@ -101,8 +93,6 @@ HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, con
     // Transmit the entire message
     HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, totalLength + 6, HAL_MAX_DELAY);
 
-    // Transmit the clear buffer
-    HAL_StatusTypeDef clearStatus = HAL_UART_Transmit(uart, clearBuffer, 6, HAL_MAX_DELAY);
 
     // Free the allocated buffer
     free(buffer);
@@ -115,7 +105,6 @@ HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, con
 HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
 
     uint8_t buffer[6] = {0};
-    uint8_t *clearBuffer  = (uint8_t*)malloc(6);
     clearBuffer[0] = 0x5A;
     clearBuffer[1] = 0xA5;
     clearBuffer[2] = 0X03;
@@ -132,8 +121,6 @@ HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
 
         // Transmit the entire message
     HAL_UART_Transmit(uart, buffer, 6, HAL_MAX_DELAY);
-    HAL_UART_Transmit(uart, clearBuffer, 6, HAL_MAX_DELAY);
-
     free(clearBuffer);
 
 }

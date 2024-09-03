@@ -69,8 +69,9 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
 
 
 HAL_StatusTypeDef HMI_changepage(UART_HandleTypeDef *uart, uint16_t pagenum);
-HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, const char* string);
+HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, const char* string, size_t length);
 HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr);
+void writeToHMI(const char *format, ...) ;
 
 
 // Main loop
