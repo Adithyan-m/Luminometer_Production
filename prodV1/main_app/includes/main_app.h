@@ -5,6 +5,10 @@
  * Author: adith
  */
 
+
+
+// TODO: Handle key presses for changing pages 
+
 #ifndef MAIN_APP_INCLUDES_MAIN_APP_H_
 #define MAIN_APP_INCLUDES_MAIN_APP_H_
 
