@@ -63,43 +63,44 @@ HAL_StatusTypeDef HMI_changepage(UART_HandleTypeDef *uart, uint16_t pagenum){
 
 
 
-HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, const char* string) {
+HAL_StatusTypeDef HMI_writeString(UART_HandleTypeDef *uart, uint16_t vpAddr, const char* string, size_t length) {
+    uint16_t totalLength = length + 6; // 3 bytes for the header (excluding 5A A5)
 
-    uint16_t stringLength = strlen(string);
-    uint16_t totalLength = stringLength + 6; // 3 bytes for the header (excluding 5A A5)
-
-    // Check if the string is too long for the protocol
-    if (totalLength > 0xFFFF) {
-        return HAL_ERROR;
-    }
-
-    // Allocate a buffer for the entire message
-    uint8_t* buffer = (uint8_t*)malloc(totalLength + 6); // +4 for the 5A A5 size 82 VV PP
-    if (buffer == NULL) {
+    // Check if the string is too long for the protocol or our buffer
+    if (totalLength > 0xFFFF || totalLength + 6 > MAX_HMI_MESSAGE_SIZE) {
         return HAL_ERROR;
     }
 
     // Prepare the message
-    buffer[0] = 0x5A;
-    buffer[1] = 0xA5;
-    buffer[2] = stringLength + 4;
-    buffer[3] = 0x82;
-    buffer[4] = 0x00FF & (vpAddr >> 8);
-    buffer[5] = 0x00FF & vpAddr;
+    hmiBuffer[0] = 0x5A;
+    hmiBuffer[1] = 0xA5;
+    hmiBuffer[2] = length + 4;
+    hmiBuffer[3] = 0x82;
+    hmiBuffer[4] = 0x00FF & (vpAddr >> 8);
+    hmiBuffer[5] = 0x00FF & vpAddr;
 
     // Copy the string to the buffer
-    memcpy(buffer + 6, string, stringLength);
+    memcpy(hmiBuffer + 6, string, length);
 
     // Transmit the entire message
-    HAL_StatusTypeDef status = HAL_UART_Transmit(uart, buffer, totalLength + 6, HAL_MAX_DELAY);
+    return HAL_UART_Transmit(uart, hmiBuffer, totalLength + 6, HAL_MAX_DELAY);
+}
 
+void writeToHMI(const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    int length = vsnprintf(stringBuffer, STRING_SIZE, format, args);
+    va_end(args);
 
-    // Free the allocated buffer
-    free(buffer);
-    free(clearBuffer);
-
-    // Return the status of the first transmission, or the clear transmission if the first was successful
-    return (status == HAL_OK) ? clearStatus : status;
+    if (length > 0 && length < STRING_SIZE) {
+        HMI_writeString(&HANDLE_HMI, HMI_STRING_ADDRESS, stringBuffer, length);
+    } else if (length >= STRING_SIZE) {
+        // Message was truncated
+        HMI_writeString(&HANDLE_HMI, HMI_STRING_ADDRESS, "Error: Message too long", 23);
+    } else {
+        // Encoding error occurred
+        HMI_writeString(&HANDLE_HMI, HMI_STRING_ADDRESS, "Error: Invalid message", 22);
+    }
 }
 
 HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
@@ -121,6 +122,5 @@ HAL_StatusTypeDef HMI_eraseString(UART_HandleTypeDef *uart, uint16_t vpAddr){
 
         // Transmit the entire message
     HAL_UART_Transmit(uart, buffer, 6, HAL_MAX_DELAY);
-    free(clearBuffer);
-
+ 
 }
